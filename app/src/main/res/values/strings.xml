@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SunnyWeater</string>
+    <string name="input_address">输入地址</string>
 </resources>
