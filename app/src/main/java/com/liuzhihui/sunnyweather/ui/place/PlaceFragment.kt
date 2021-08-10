@@ -1,5 +1,6 @@
 package com.liuzhihui.sunnyweather.ui.place
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
@@ -16,13 +17,12 @@ import com.liuzhihui.sunnyweather.R
 import com.liuzhihui.sunnyweather.databinding.FragmentPlaceBinding
 import com.liuzhihui.sunnyweather.logic.model.Place
 import com.liuzhihui.sunnyweather.showToast
+import com.liuzhihui.sunnyweather.ui.weather.WeatherActivity
 import com.xiasuhuei321.loadingdialog.view.LoadingDialog
 
 class PlaceFragment : Fragment() {
 
     val viewModel by lazy { ViewModelProvider(this).get(PlaceViewModel::class.java) }
-
-//    private val ld by lazy { LoadingDialog(this.context) }
 
     private lateinit var adapter: PlaceAdapter
 
@@ -40,6 +40,16 @@ class PlaceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        if (viewModel.isPlaceSaved()) {
+            val place = viewModel.getSavedPlace()
+            val intent = Intent(context, WeatherActivity::class.java).apply {
+                putExtra("location_lng", place.location.lng)
+                putExtra("location_lat", place.location.lat)
+                putExtra("place_name", place.name)
+            }
+            startActivity(intent)
+            activity?.finish()
+        }
         val layoutManager = LinearLayoutManager(activity)
         binding.recyclerView.layoutManager = layoutManager
         adapter = PlaceAdapter(this, viewModel.placeList)
@@ -47,10 +57,6 @@ class PlaceFragment : Fragment() {
         binding.searchPlaceEdit.addTextChangedListener { text: Editable? ->
             val content = text.toString()
             if (content.length > 1) {
-//                ld.setLoadingText("加载中……")
-//                    .setInterceptBack(true)
-//                    .setLoadSpeed(LoadingDialog.Speed.SPEED_TWO)
-//                    .show()
                 viewModel.searchPlaces(content)
             } else {
                 binding.recyclerView.visibility = View.GONE
@@ -61,7 +67,6 @@ class PlaceFragment : Fragment() {
         }
         viewModel.placeLiveData.observe(viewLifecycleOwner) { result ->
             val places = result.getOrNull()
-//            ld.close()
             if (places != null) {
                 binding.recyclerView.visibility = View.VISIBLE
                 binding.bgImageView.visibility = View.GONE

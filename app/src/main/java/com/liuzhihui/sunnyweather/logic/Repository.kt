@@ -1,6 +1,8 @@
 package com.liuzhihui.sunnyweather.logic
 
 import androidx.lifecycle.liveData
+import com.liuzhihui.sunnyweather.logic.dao.PlaceDao
+import com.liuzhihui.sunnyweather.logic.model.Place
 import com.liuzhihui.sunnyweather.logic.model.Weather
 import com.liuzhihui.sunnyweather.logic.network.SunnyWeatherNetwork
 import kotlinx.coroutines.async
@@ -51,5 +53,11 @@ object Repository {
         }
         emit(result)
     }
+
+    fun savePlace(place: Place) = PlaceDao.savePlace(place)
+
+    fun getSavedPlace() = PlaceDao.getSavedPlace()
+
+    fun isPlaceSaved() = PlaceDao.isPlaceSaved()
 
 }

@@ -1,10 +1,7 @@
 package com.liuzhihui.sunnyweather.ui.weather
 
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.liuzhihui.sunnyweather.BaseActivity
 import com.liuzhihui.sunnyweather.databinding.ActivityWeatherBinding
