@@ -8,6 +8,6 @@
         android:id="@+id/placeFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.liuzhihui.sunnyweather.ui.place.PlaceFragment"/>
+        android:name="com.liuzhihui.sunnyweather.ui.place.PlaceFragment" />
 
 </FrameLayout>

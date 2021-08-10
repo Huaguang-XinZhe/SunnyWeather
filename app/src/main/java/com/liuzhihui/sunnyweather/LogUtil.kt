@@ -12,31 +12,31 @@ object LogUtil {
     private const val TAG = "MainActivity"
     private var level = VERBOSE
 
-    fun v(tag: String = TAG, msg: String) {
+    fun v(msg: String, tag: String = TAG) {
         if (level <= VERBOSE) {
             Log.v(tag, msg)
         }
     }
 
-    fun d(tag: String = TAG, msg: String) {
+    fun d(msg: String, tag: String = TAG) {
         if (level <= DEBUG) {
             Log.d(tag, msg)
         }
     }
 
-    fun i(tag: String = TAG, msg: String) {
+    fun i(msg: String, tag: String = TAG) {
         if (level <= INFO) {
             Log.i(tag, msg)
         }
     }
 
-    fun w(tag: String = TAG, msg: String) {
+    fun w(msg: String, tag: String = TAG) {
         if (level <= WARN) {
             Log.w(tag, msg)
         }
     }
 
-    fun e(tag: String = TAG, msg: String) {
+    fun e(msg: String, tag: String = TAG) {
         if (level <= ERROR) {
             Log.e(tag, msg)
         }

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.liuzhihui.sunnyweather.R
 import com.liuzhihui.sunnyweather.databinding.FragmentPlaceBinding
+import com.liuzhihui.sunnyweather.logic.model.Place
 import com.liuzhihui.sunnyweather.showToast
 import com.xiasuhuei321.loadingdialog.view.LoadingDialog
 
@@ -21,7 +22,7 @@ class PlaceFragment : Fragment() {
 
     val viewModel by lazy { ViewModelProvider(this).get(PlaceViewModel::class.java) }
 
-    val ld by lazy { LoadingDialog(this.context) }
+//    private val ld by lazy { LoadingDialog(this.context) }
 
     private lateinit var adapter: PlaceAdapter
 
@@ -45,11 +46,11 @@ class PlaceFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.searchPlaceEdit.addTextChangedListener { text: Editable? ->
             val content = text.toString()
-            if (content.isNotEmpty()) {
-                ld.setLoadingText("加载中……")
-                    .setInterceptBack(true)
-                    .setLoadSpeed(LoadingDialog.Speed.SPEED_TWO)
-                    .show()
+            if (content.length > 1) {
+//                ld.setLoadingText("加载中……")
+//                    .setInterceptBack(true)
+//                    .setLoadSpeed(LoadingDialog.Speed.SPEED_TWO)
+//                    .show()
                 viewModel.searchPlaces(content)
             } else {
                 binding.recyclerView.visibility = View.GONE
@@ -60,7 +61,7 @@ class PlaceFragment : Fragment() {
         }
         viewModel.placeLiveData.observe(viewLifecycleOwner) { result ->
             val places = result.getOrNull()
-            ld.close()
+//            ld.close()
             if (places != null) {
                 binding.recyclerView.visibility = View.VISIBLE
                 binding.bgImageView.visibility = View.GONE
