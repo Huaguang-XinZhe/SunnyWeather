@@ -1,24 +1,34 @@
 package com.liuzhihui.sunnyweather.ui.weather
 
+import android.content.Context
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import com.liuzhihui.sunnyweather.BaseActivity
+import com.liuzhihui.sunnyweather.*
 import com.liuzhihui.sunnyweather.databinding.ActivityWeatherBinding
 import com.liuzhihui.sunnyweather.databinding.ForecastItemBinding
 import com.liuzhihui.sunnyweather.logic.getSky
 import com.liuzhihui.sunnyweather.logic.model.Weather
-import com.liuzhihui.sunnyweather.showToast
 import com.xiasuhuei321.loadingdialog.view.LoadingDialog
 import java.util.*
 
 class WeatherActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityWeatherBinding
+    lateinit var binding: ActivityWeatherBinding
 
     val viewModel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
 
+    // 这个不能直接赋值：System services not available to Activities before onCreate()
     private val ld by lazy { LoadingDialog(this) }
+
+    val manager by lazy { getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager }
+
+    private val searchEdit: EditText by lazy { findViewById(R.id.searchPlaceEdit) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +52,35 @@ class WeatherActivity : BaseActivity() {
                     "无法成功获取天气信息".showToast()
                     result.exceptionOrNull()?.printStackTrace()
                 }
+                binding.swipeRefresh.isRefreshing = false
             }
         }
+        binding.swipeRefresh.setOnRefreshListener {
+            binding.swipeRefresh.setColorSchemeResources(R.color.teal_200)
+            refreshWeather()
+        }
+        binding.now.navBtn.setOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+
+            override fun onDrawerOpened(drawerView: View) {
+                manager.showSoftInput(searchEdit, InputMethodManager.SHOW_FORCED)
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {}
+
+            override fun onDrawerClosed(drawerView: View) {
+                manager.hideSoftInputFromWindow(drawerView.windowToken, 0)
+                searchEdit.setText("")
+            }
+        })
+    }
+
+    fun refreshWeather() {
+        viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
+        binding.swipeRefresh.isRefreshing = true
     }
 
     private fun showWeatherInfo(weather: Weather) {

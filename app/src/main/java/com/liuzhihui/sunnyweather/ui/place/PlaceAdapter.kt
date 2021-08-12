@@ -1,10 +1,14 @@
 package com.liuzhihui.sunnyweather.ui.place
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.liuzhihui.sunnyweather.R
@@ -19,20 +23,38 @@ class PlaceAdapter(private val fragment: PlaceFragment, private val placeList: L
         val placeAddress: TextView = view.findViewById(R.id.placeAddress)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.place_item, parent, false)
         val holder = ViewHolder(view)
+        val activity = fragment.activity
         holder.itemView.setOnClickListener {
             val position = holder.adapterPosition
             val place = placeList[position]
-            val intent = Intent(parent.context, WeatherActivity::class.java).apply {
-                putExtra("location_lng", place.location.lng)
-                putExtra("location_lat", place.location.lat)
-                putExtra("place_name", place.name)
+            if (activity is WeatherActivity) {
+                activity.binding.drawerLayout.closeDrawers()
+                activity.viewModel.apply {
+                    locationLng = place.location.lng
+                    locationLat = place.location.lat
+                    placeName = place.name
+                }
+                activity.refreshWeather()
+            } else {
+                val intent = Intent(parent.context, WeatherActivity::class.java).apply {
+                    putExtra("location_lng", place.location.lng)
+                    putExtra("location_lat", place.location.lat)
+                    putExtra("place_name", place.name)
+                }
+                fragment.startActivity(intent)
+                fragment.activity?.finish()
             }
             fragment.viewModel.savePlace(place)
-            fragment.startActivity(intent)
-            fragment.activity?.finish()
+        }
+        holder.itemView.setOnTouchListener { it, _ ->
+            if (activity is WeatherActivity) {
+                activity.manager.hideSoftInputFromWindow(it.windowToken, 0)
+            }
+            false
         }
         return holder
     }
